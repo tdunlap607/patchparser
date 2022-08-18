@@ -1,5 +1,5 @@
 # PatchParser
-A python package to extract key features from a commit patch.
+A python package to extract features from a commit patch.
 
 Please note this repository is still in the initial development phase.
 
