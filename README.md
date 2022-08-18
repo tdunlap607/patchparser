@@ -16,10 +16,11 @@ pip install patchparser
 ```python
 from patchparser import github_parser
 
-# Parse a given commit for a GitHub repository
-parsed = github_parser.commit(repo_owner="Lightning-AI",
-                              repo_name="lightning",
-                              sha="62f1e82e032eb16565e676d39e0db0cac7e34ace")
+if __name__ == '__main__':
+    # Parse a given commit for a GitHub repository
+    parsed = github_parser.commit(repo_owner="Lightning-AI",
+                                  repo_name="lightning",
+                                  sha="62f1e82e032eb16565e676d39e0db0cac7e34ace")
 ```
 
 ### Parsed Features
