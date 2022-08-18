@@ -1,5 +1,5 @@
-# commit-features
-A python package for extracting commit features
+# PatchParser
+A python package for extracting features from a patch
 
 ## Features
 
