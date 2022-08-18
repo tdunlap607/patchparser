@@ -1,9 +1,28 @@
 # PatchParser
 A python package to extract key features from a commit patch.
 
-***Please note this repository is still in the initial development phase.***
+Please note this repository is still in the initial development phase.
 
-## Features
+## Installation
+
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+
+```bash
+pip install patchparser
+```
+
+## Usage
+
+```python
+from patchparser import github_parser
+
+# Parse a given commit for a GitHub repository
+parsed = github_parser.commit(repo_owner="Lightning-AI",
+                              repo_name="lightning",
+                              sha="62f1e82e032eb16565e676d39e0db0cac7e34ace")
+```
+
+### Parsed Features
 
 |Columns             |Type|Description                                                                                |
 |--------------------|----|-------------------------------------------------------------------------------------------|
@@ -36,4 +55,12 @@ A python package to extract key features from a commit patch.
 |status              |str |GitHub status tag at file level (e.g., modified)                                           |
 |total_additions     |int |Total lines added for a file                                                               |
 |total_deletions     |int |Total lines deleted for a file                                                             |
-|total_changes       |int |Total lines changed for a file (total_additions + total_deletions)     
+|total_changes       |int |Total lines changed for a file (total_additions + total_deletions) 
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[Unlicense](https://choosealicense.com/licenses/unlicense/)
