@@ -5,7 +5,7 @@ Please note this repository is still in the initial development phase.
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install patchparser.
 
 ```bash
 pip install patchparser
