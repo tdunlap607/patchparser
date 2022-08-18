@@ -1,0 +1,25 @@
+[build-system]
+# These are the assumed default build requirements from pip:
+# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "patchparser"
+version = "0.0.1"
+authors = [
+  { name="Trevor Dunlap", email="tdunlap607@gmail.com" },
+]
+description = "A python package to extract key features from a commit patch."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/tdunlap607/patchparser"
+"Bug Tracker" = "https://github.com/tdunlap607/patchparser/issues"

@@ -1,11 +1,14 @@
 # PatchParser
-A python package for extracting features from a patch
+A python package to extract key features from a commit patch.
+
+***Please note this repository is still in the initial development phase.***
 
 ## Features
 
 |Columns             |Type|Description                                                                                |
 |--------------------|----|-------------------------------------------------------------------------------------------|
-|repo                |str |Repository link                                                                            |
+|repo_owner          |str |Repository Owner                                                                           |
+|repo_name           |str |Repository Name                                                                           |
 |sha                 |str |Target Commit SHA                                                                          |
 |message             |str |Associated commit message                                                                  |
 |file_name           |str |Name of file altered in patch                                                              |
@@ -17,7 +20,7 @@ A python package for extracting features from a patch
 |total_patches       |int |Total number of patches per file                                                           |
 |raw_patch_header    |str |Header of the patch (@@ -A,X +B,Y @@)                                                      |
 |raw_patch           |str |The raw patch for a single patch                                                           |
-|original_code       |str |The lef side (parent commit state) of the git diff in GitHub. Raw code. -'s are stripped.  |
+|original_code       |str |The left side (parent commit state) of the git diff in GitHub. Raw code. -'s are stripped.  |
 |original_line_start |int |Original line start number (@@ -**A**,X +B,Y @@)                                               |
 |original_line_length|int |Original line end (@@ -A,**X** +B,Y @@)                                                        |
 |original_line_end   |int |Original_line_start + original_line_length                                                 |
