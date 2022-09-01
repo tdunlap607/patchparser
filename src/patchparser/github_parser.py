@@ -47,6 +47,19 @@ class CommitParse:
         self.total_file_additions = None
         self.total_file_deletions = None
         self.total_file_changes = None
+        self.commit_author_name = None
+        self.commit_author_login = None
+        self.commit_author_email = None
+        self.commit_author_date = None
+        self.commit_committer_name = None
+        self.commit_committer_login = None
+        self.commit_committer_email = None
+        self.commit_committer_date = None
+        self.commit_tree_sha = None
+        self.commit_tree_url = None
+        self.commit_verification_verified = None
+        self.commit_verification_reason = None
+        self.parents = None
 
 
 def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
@@ -159,6 +172,19 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
                 temp_parsed_commit.total_file_additions = total_file_additions
                 temp_parsed_commit.total_file_deletions = total_file_deletions
                 temp_parsed_commit.total_file_changes = total_file_changes
+                temp_parsed_commit.commit_author_name = parsed_commit.commit_author_name
+                temp_parsed_commit.commit_author_login = parsed_commit.commit_author_login
+                temp_parsed_commit.commit_author_email = parsed_commit.commit_author_email
+                temp_parsed_commit.commit_author_date = parsed_commit.commit_author_date
+                temp_parsed_commit.commit_committer_name = parsed_commit.commit_committer_name
+                temp_parsed_commit.commit_committer_login = parsed_commit.commit_committer_login
+                temp_parsed_commit.commit_committer_email = parsed_commit.commit_committer_email
+                temp_parsed_commit.commit_committer_date = parsed_commit.commit_committer_date
+                temp_parsed_commit.commit_tree_sha = parsed_commit.commit_tree_sha
+                temp_parsed_commit.commit_tree_url = parsed_commit.commit_tree_url
+                temp_parsed_commit.commit_verification_verified = parsed_commit.commit_verification_verified
+                temp_parsed_commit.commit_verification_reason = parsed_commit.commit_verification_reason
+                temp_parsed_commit.parents = parsed_commit.parents
                 
                 """Append the class as a dictionary to the data list"""
                 data.append(temp_parsed_commit.__dict__)
@@ -178,6 +204,19 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
             temp_parsed_commit.total_file_additions = total_file_additions
             temp_parsed_commit.total_file_deletions = total_file_deletions
             temp_parsed_commit.total_file_changes = total_file_changes
+            temp_parsed_commit.commit_author_name = parsed_commit.commit_author_name
+            temp_parsed_commit.commit_author_login = parsed_commit.commit_author_login
+            temp_parsed_commit.commit_author_email = parsed_commit.commit_author_email
+            temp_parsed_commit.commit_author_date = parsed_commit.commit_author_date
+            temp_parsed_commit.commit_committer_name = parsed_commit.commit_committer_name
+            temp_parsed_commit.commit_committer_login = parsed_commit.commit_committer_login
+            temp_parsed_commit.commit_committer_email = parsed_commit.commit_committer_email
+            temp_parsed_commit.commit_committer_date = parsed_commit.commit_committer_date
+            temp_parsed_commit.commit_tree_sha = parsed_commit.commit_tree_sha
+            temp_parsed_commit.commit_tree_url = parsed_commit.commit_tree_url
+            temp_parsed_commit.commit_verification_verified = parsed_commit.commit_verification_verified
+            temp_parsed_commit.commit_verification_reason = parsed_commit.commit_verification_reason
+            temp_parsed_commit.parents = parsed_commit.parents
             
             """Append the class as a dictionary to the data list"""
             data.append(temp_parsed_commit.__dict__)
@@ -274,6 +313,19 @@ def commit(repo_owner: str, repo_name: str, sha: str, verbose=False) -> list:
     
     """Add commit message"""
     parsed_commit.message = commit_info["commit"]["message"]
+    parsed_commit.commit_author_name = commit_info["commit"]["author"]["name"]
+    parsed_commit.commit_author_login = commit_info["author"]["login"]
+    parsed_commit.commit_author_email = commit_info["commit"]["author"]["email"]
+    parsed_commit.commit_author_date = commit_info["commit"]["author"]["date"]
+    parsed_commit.commit_committer_name = commit_info["commit"]["committer"]["name"]
+    parsed_commit.commit_committer_login = commit_info["committer"]["login"]
+    parsed_commit.commit_committer_email = commit_info["commit"]["committer"]["email"]
+    parsed_commit.commit_committer_date = commit_info["commit"]["committer"]["date"]
+    parsed_commit.commit_tree_sha = commit_info["commit"]["tree"]["sha"]
+    parsed_commit.commit_tree_url = commit_info["commit"]["tree"]["url"]
+    parsed_commit.commit_verification_verified = commit_info["commit"]["verification"]["verified"]
+    parsed_commit.commit_verification_reason = commit_info["commit"]["verification"]["reason"]
+    parsed_commit.parents = [z["sha"] for z in commit_info["parents"]]
     
     """Parse the files"""
     parsed_files = parse_commit_info(commit_info["files"], parsed_commit)
