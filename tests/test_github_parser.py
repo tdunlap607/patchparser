@@ -4,15 +4,14 @@ from patchparser import github_parser as gp
 
 class TestGitHubPatchParser(unittest.TestCase):
 
-    def test_commit(self):
+    def test_github_api(self):
         """
-        Testing GitHub Parser for a given commit
-        Associated CVE: https://nvd.nist.gov/vuln/detail/CVE-2021-4118
-        Example commit: https://github.com/Lightning-AI/lightning/commit/62f1e82e032eb16565e676d39e0db0cac7e34ace
+        Testing GitHub Parser for a given commit by using the GitHub API
+        Example commit: https://github.com/tdunlap607/patchparser/commit/0dfe5bacc3833160dbe3ea9edf49cd7d599ad290
         """
-        parsed = gp.commit(repo_owner="Lightning-AI",
-                           repo_name="lightning",
-                           sha="62f1e82e032eb16565e676d39e0db0cac7e34ace")
+        parsed = gp.commit(repo_owner="tdunlap607",
+                           repo_name="patchparser",
+                           sha="0dfe5bacc3833160dbe3ea9edf49cd7d599ad290")
                 
         """Expecting 5 changes from the above commit"""
         self.assertEqual(len(parsed), 5)

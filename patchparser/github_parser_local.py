@@ -5,18 +5,17 @@ import re
 import git
 
 
-class CommitParse:
-    def __init__(self, repo_owner: str, repo_name: bool, sha: str, commit_exist: bool) -> object:
-        """Initialize a class to hold the data for parsing the commit data
+class CommitParseLocal:
+    def __init__(self, repo_owner: str, repo_name: bool, sha: str) -> object:
+        """Initialize a class to hold the data for parsing the commit data of a local repo
 
         Args:
             repo_owner (str): Repo owner
             repo_name (str): Repo name
             sha (str): Target commit SHA
-            commit_exist (bool): Value from API response
 
         Returns:
-            object: CommitParse
+            object: CommitParseLocal
         """
         self.repo_owner = repo_owner
         self.repo_name = repo_name
@@ -61,15 +60,14 @@ class CommitParse:
         self.commit_verification_verified = None
         self.commit_verification_reason = None
         self.parents = None
-        self.commit_exist = commit_exist
 
 
-def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
+def parse_commit_info(commit_info: list, parsed_commit: CommitParseLocal) -> list:
     """Parses the commit_info list
 
     Args:
         commit_info (list): commit_info list from original data
-        parsed_commit (CommitParse): Set CommitParse class with basic info
+        parsed_commit (CommitParseLocal): Set CommitParseLocal class with basic info
 
     Returns:
         list: List of dictionaries with desired data for project
@@ -107,8 +105,11 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
             headers = []
             for head_row in headers_search:
                 if '-' in head_row and '+' in head_row:
-                    # TODO: how do I handle incorrect headers? See commit 0dfe5bacc3833160dbe3ea9edf49cd7d599ad290 for patchparser
-                    headers.append(f"@@{head_row}@@")
+                    # get the original line headers
+                    original_header_lines = re.search(f"@@ -(.*?) \+", f"@@{head_row}@@").group(1)
+                    # make sure the header is of type int
+                    if original_header_lines.split(',')[-1].isdigit():
+                        headers.append(f"@@{head_row}@@")
             total_patches = len(headers)
             
             for index, header in enumerate(headers):
@@ -156,10 +157,9 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
                 patch_parse = parse_raw_patch(raw_patch)
                 
                 """Create a temporary class to hold the parsed patch data"""                
-                temp_parsed_commit = CommitParse(parsed_commit.repo_owner,
-                                                 parsed_commit.repo_name,
-                                                 parsed_commit.sha,
-                                                 parsed_commit.commit_exist)
+                temp_parsed_commit = CommitParseLocal(parsed_commit.repo_owner,
+                                                      parsed_commit.repo_name,
+                                                      parsed_commit.sha)
                 
                 """Set various values"""
                 temp_parsed_commit.message = parsed_commit.message
@@ -207,10 +207,9 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
                 data.append(temp_parsed_commit.__dict__)
         else:
             """Sometimes patch is None (e.g., XLSX files)"""
-            temp_parsed_commit = CommitParse(parsed_commit.repo_owner,
-                                             parsed_commit.repo_name,
-                                             parsed_commit.sha,
-                                             parsed_commit.commit_exist)
+            temp_parsed_commit = CommitParseLocal(parsed_commit.repo_owner,
+                                                  parsed_commit.repo_name,
+                                                  parsed_commit.sha)
             
             temp_parsed_commit.message = parsed_commit.message
             temp_parsed_commit.file_name = file_name
@@ -306,17 +305,17 @@ def parse_raw_patch(temp_raw_patch: str) -> dict:
     return patch_parse
 
 
-def commit(repo_owner: str, repo_name: str, sha: str, base_repo_path: str, verbose=False) -> list:
-    """Pass the GitHub repo_owner, repo_name, and associated commit to parse.
+def commit_local(repo_owner: str, repo_name: str, sha: str, base_repo_path: str, verbose=False) -> list:
+    """Pass the local cloned GitHub repo_owner, repo_name, and associated commit to parse.
 
     Args:
         repo_owner (str): Target repo owner
         repo_name (str): Target repo name
         sha (str): Target commit SHA from GitHub
-        base_rpo_path (str): Directory of localy cloned repository
+        base_repo_path (str): Directory of localy cloned repository
 
     Returns:
-        list: List of dictionaries strcutred around the class CommitParse
+        list: List of dictionaries strcutred around the class CommitParseLocal
     """
     
     """Create the repo_path"""
@@ -339,14 +338,10 @@ def commit(repo_owner: str, repo_name: str, sha: str, base_repo_path: str, verbo
     # split the raw diff, no need to take 0, it's empty on this split
     diff_splits = diff.split("diff --git")[1:]
     
-    """Confirm the commit exists"""
-    # try:
-    commit_exist = True
     """Initialize a CommitParse to hold data"""
-    parsed_commit = CommitParse(repo_owner=repo_owner, 
-                                repo_name=repo_name,
-                                sha=sha,
-                                commit_exist=commit_exist)
+    parsed_commit = CommitParseLocal(repo_owner=repo_owner,
+                                     repo_name=repo_name,
+                                     sha=sha)
             
     """Add commit message"""
     parsed_commit.message = commit_info.message
@@ -434,13 +429,4 @@ def commit(repo_owner: str, repo_name: str, sha: str, base_repo_path: str, verbo
     parsed_files = parse_commit_info(files, parsed_commit)
             
     return parsed_files
-    # except:
-    #     """Handles commit errors, e.g., repo was deleted"""
-    #     commit_exist = False
-    #     parsed_commit = CommitParse(repo_owner=repo_owner, 
-    #                                 repo_name=repo_name,
-    #                                 sha=sha,
-    #                                 commit_exist=commit_exist)
-        
-    #     return [parsed_commit.__dict__]
         

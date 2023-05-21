@@ -101,7 +101,11 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParse) -> list:
             headers = []
             for head_row in headers_search:
                 if '-' in head_row and '+' in head_row:
-                    headers.append(f"@@{head_row}@@")
+                    # get the original line headers
+                    original_header_lines = re.search(f"@@ -(.*?) \+", f"@@{head_row}@@").group(1)
+                    # make sure the header is of type int
+                    if original_header_lines.split(',')[-1].isdigit():
+                        headers.append(f"@@{head_row}@@")
             total_patches = len(headers)
             
             for index, header in enumerate(headers):
