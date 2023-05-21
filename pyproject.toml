@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "patchparser"
-version = "0.0.3-rc1"
+version = "0.0.3"
 authors = [
   { name="Trevor Dunlap", email="tdunlap607@gmail.com" },
 ]
