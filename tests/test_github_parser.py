@@ -13,7 +13,7 @@ class TestGitHubPatchParser(unittest.TestCase):
                            repo_name="vfcfinder",
                            sha="f573763decf499349721c48f11dc8299a91255d1",
                            verbose=True)
-        
+
         """Expecting 5 changes from the above commit"""
         self.assertEqual(len(parsed), 9)
 
