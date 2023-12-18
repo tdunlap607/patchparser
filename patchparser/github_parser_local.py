@@ -86,13 +86,15 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParseLocal) -> lis
     """
     for index, row in enumerate(commit_info):
         file_name = row["filename"]
-        original_file_name = row["b_file"]
-        current_file_name = row["a_file"]
+        original_file_name = row["a_file"]
+        current_file_name = row["b_file"]
         file_number = index
         file_extension = file_name.split(".")[-1]
         """Not all will have patches. E.g., PDF files"""
         if "patch" in row:
             raw_file_patch = row["patch"]
+            if row['patch'] == '':
+                print("Empty patch")
         else:
             raw_file_patch = None
         status = row["status"]
@@ -117,6 +119,45 @@ def parse_commit_info(commit_info: list, parsed_commit: CommitParseLocal) -> lis
                         headers.append(f"@@{head_row}@@")
             total_patches = len(headers)
 
+            """If no header, add the data. It's probably a rename with no changes"""
+            if total_patches == 0:
+                """Create a temporary class to hold the parsed patch data"""
+                temp_parsed_commit = CommitParseLocal(parsed_commit.repo_owner,
+                                                      parsed_commit.repo_name,
+                                                      parsed_commit.sha)
+
+                """Set various values"""
+                temp_parsed_commit.message = parsed_commit.message
+                temp_parsed_commit.file_name = file_name
+                temp_parsed_commit.original_file_name = original_file_name
+                temp_parsed_commit.current_file_name = current_file_name
+                temp_parsed_commit.file_number = file_number
+                temp_parsed_commit.file_extension = file_extension
+                temp_parsed_commit.total_files_changed = total_files_changed
+                temp_parsed_commit.raw_file_patch = raw_file_patch
+                temp_parsed_commit.raw_patch = raw_file_patch
+                temp_parsed_commit.status = status
+                temp_parsed_commit.total_file_additions = total_file_additions
+                temp_parsed_commit.total_file_deletions = total_file_deletions
+                temp_parsed_commit.total_file_changes = total_file_changes
+                temp_parsed_commit.commit_author_name = parsed_commit.commit_author_name
+                temp_parsed_commit.commit_author_login = parsed_commit.commit_author_login
+                temp_parsed_commit.commit_author_email = parsed_commit.commit_author_email
+                temp_parsed_commit.commit_author_date = parsed_commit.commit_author_date
+                temp_parsed_commit.commit_committer_name = parsed_commit.commit_committer_name
+                temp_parsed_commit.commit_committer_login = parsed_commit.commit_committer_login
+                temp_parsed_commit.commit_committer_email = parsed_commit.commit_committer_email
+                temp_parsed_commit.commit_committer_date = parsed_commit.commit_committer_date
+                temp_parsed_commit.commit_tree_sha = parsed_commit.commit_tree_sha
+                temp_parsed_commit.commit_tree_url = parsed_commit.commit_tree_url
+                temp_parsed_commit.commit_verification_verified = parsed_commit.commit_verification_verified
+                temp_parsed_commit.commit_verification_reason = parsed_commit.commit_verification_reason
+                temp_parsed_commit.parents = parsed_commit.parents
+
+                """Append the class as a dictionary to the data list"""
+                data.append(temp_parsed_commit.__dict__)
+
+            """Parse the other data"""
             for index, header in enumerate(headers):
                 patch_number = index
                 if header == None:
@@ -478,8 +519,10 @@ def commit_local_updated(repo_owner: str, repo_name: str, sha: str, base_repo_pa
     commit_info = repo.commit(sha)
 
     # obtain a commit diff
-    git_repo_diff = commit_info.diff(f"{sha}~", create_patch=True)
-    git_repo_diff_change_type = commit_info.diff(f"{sha}~")
+    # we have to reverse some reason to get the headers correct
+    # Example issue: https://github.com/gitpython-developers/GitPython/issues/1291
+    git_repo_diff = commit_info.diff(f"{sha}~", create_patch=True, R=True)
+    git_repo_diff_change_type = commit_info.diff(f"{sha}~", R=True)
 
     # split the raw diff, no need to take 0, it's empty on this split
     diff_splits = diff.split("diff --git")[1:]
@@ -510,12 +553,12 @@ def commit_local_updated(repo_owner: str, repo_name: str, sha: str, base_repo_pa
     for index, file_diff in enumerate(git_repo_diff[:1000]):
         try:
             temp_parse_test = {
-                "filename": file_diff.a_path,
+                "filename": file_diff.b_path,
                 "a_file": file_diff.a_path,
                 "b_file": file_diff.b_path,
-                "additions": commit_info.stats.files[file_diff.a_path]['insertions'],
-                "deletions": commit_info.stats.files[file_diff.a_path]['deletions'],
-                "changes": commit_info.stats.files[file_diff.a_path]['lines'],
+                "additions": commit_info.stats.files[file_diff.b_path]['insertions'],
+                "deletions": commit_info.stats.files[file_diff.b_path]['deletions'],
+                "changes": commit_info.stats.files[file_diff.b_path]['lines'],
                 "patch": file_diff.diff.decode("utf-8"),
                 "status": git_repo_diff_change_type[index].change_type
             }
